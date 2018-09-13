@@ -13,13 +13,15 @@ import (
 type Field interface {
 	String() string
 	GetTag() string
+	GetSubfields() []*SubField
 }
 
 // ControlField represents a control field, which contains only a tag and data.
 type ControlField struct {
-	XMLName xml.Name `xml:"controlfield"`
-	Tag     string   `xml:"tag,attr"`
-	Data    string   `xml:",chardata"`
+	XMLName   xml.Name `xml:"controlfield"`
+	Tag       string   `xml:"tag,attr"`
+	Data      string   `xml:",chardata"`
+	SubFields []*SubField
 }
 
 // String returns the ControlField as a string.
@@ -30,6 +32,11 @@ func (cf *ControlField) String() string {
 // GetTag returns the tag for a ControlField.
 func (cf *ControlField) GetTag() string {
 	return cf.Tag
+}
+
+// GetSubfields returns the tag for a DataField.
+func (cf *ControlField) GetSubfields() []*SubField {
+	return cf.SubFields
 }
 
 func readControl(reader io.Reader, dent *dirent) (field Field, err error) {
@@ -102,6 +109,11 @@ func (df *DataField) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 		return err
 	}
 	return e.EncodeToken(xml.EndElement{Name: start.Name})
+}
+
+// GetSubfields returns the tag for a DataField.
+func (df *DataField) GetSubfields() []*SubField {
+	return df.SubFields
 }
 
 // GetTag returns the tag for a DataField.
